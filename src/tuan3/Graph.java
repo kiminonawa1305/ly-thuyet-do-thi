@@ -91,7 +91,7 @@ public class Graph {
 
 		System.out.println("Các đỉnh liên thông với đỉnh: " + dinh + " là " + re);
 	}
-	
+
 	public ArrayList diTimCacDinhLienThong1(int dinh) {
 		ArrayList<Integer> re = new ArrayList<>();
 		visited = new boolean[numVertex];
@@ -105,13 +105,18 @@ public class Graph {
 	}
 
 	/**
-	 * Xét tính liên thông của đồ thị, đếm số thành phần liên thông cũng như là xuất ra các đỉnh thuộc cũng 1 thành phần liên thông.
+	 * Xét tính liên thông của đồ thị, đếm số thành phần liên thông cũng như là xuất
+	 * ra các đỉnh thuộc cũng 1 thành phần liên thông.
 	 * 
-	 * Chạy vòng lặp để kiểm tra xem khi chạy thuật toán do tìm thì các đỉnh đã được thăp hay chưa.
+	 * Chạy vòng lặp để kiểm tra xem khi chạy thuật toán do tìm thì các đỉnh đã được
+	 * thăp hay chưa.
 	 * 
-	 * Nếu khi chạy xong mà vẫn có đỉnh chưa được dò đến thì điểm tiếp theo được xét để chạy thuật toán dò là đỉnh đó
+	 * Nếu khi chạy xong mà vẫn có đỉnh chưa được dò đến thì điểm tiếp theo được xét
+	 * để chạy thuật toán dò là đỉnh đó
 	 * 
-	 * các đỉnh thuộc cùng thành phần sẽ được lưu vào 1 mảng và các đỉnh thuộc các thành phần khác nhau sẽ các nhau bằng số -1
+	 * các đỉnh thuộc cùng thành phần sẽ được lưu vào 1 mảng và các đỉnh thuộc các
+	 * thành phần khác nhau sẽ các nhau bằng số -1
+	 * 
 	 * @param matrixAdj
 	 */
 	public void xetTinhLienThong() {
@@ -120,7 +125,7 @@ public class Graph {
 		int startVex = 0;
 		int count = 0;
 		ArrayList<Integer> dinhThuocCungThanhPhan = new ArrayList<>();
-		
+
 		while (!check) {
 			/**
 			 * 
@@ -132,8 +137,8 @@ public class Graph {
 				if (!visited[i]) {
 					check = false;
 					startVex = i;
-				}else {
-					if(!dinhThuocCungThanhPhan.contains(i  + 1)) {
+				} else {
+					if (!dinhThuocCungThanhPhan.contains(i + 1)) {
 						dinhThuocCungThanhPhan.add(i + 1);
 					}
 				}
@@ -146,9 +151,9 @@ public class Graph {
 		} else {
 			int i = 0;
 			int thanhPhan = 1;
-			while(i < dinhThuocCungThanhPhan.size()) {
+			while (i < dinhThuocCungThanhPhan.size()) {
 				System.out.print("Cac dinh thuoc thanh phan lien thong thu: " + thanhPhan + " la: ");
-				for(; i < dinhThuocCungThanhPhan.size() && dinhThuocCungThanhPhan.get(i) != -1; i++) {
+				for (; i < dinhThuocCungThanhPhan.size() && dinhThuocCungThanhPhan.get(i) != -1; i++) {
 					System.out.print(dinhThuocCungThanhPhan.get(i) + " ");
 				}
 				System.out.println();
@@ -398,29 +403,30 @@ public class Graph {
 				re += check[i] + "->";
 			}
 		}
-		
-		public void findPathTwoVexsByBFS(int s, int t) {
-			if (s < 0 && s >= numVertex) {
-				System.out.println("Không tồn tại đỉnh: " + s);
-				return;
-			}
+	}
 
-			if (t < 0 && t >= numVertex) {
-				System.out.println("Không tồn tại đỉnh: " + t);
-				return;
-			}
+	public void findPathTwoVexsByBFS(int s, int t) {
+		if (s < 0 && s >= numVertex) {
+			System.out.println("Không tồn tại đỉnh: " + s);
+			return;
+		}
 
-			String re = "Đường đi từ đỉnh: " + (s + 1) + " đến đỉnh: " + t + " là: ";
-			int[] check = this.BFSGraph(s);
-			for (int i = 0; i < check.length; i++) {
-				if (check[i] == t) {
-					re += check[i];
-					System.out.println(re);
-					return;
-				} else {
-					re += check[i] + "->";
-				}
+		if (t < 0 && t >= numVertex) {
+			System.out.println("Không tồn tại đỉnh: " + t);
+			return;
+		}
+
+		String re = "Đường đi từ đỉnh: " + (s + 1) + " đến đỉnh: " + t + " là: ";
+		int[] check = this.BFSGraph(s);
+		for (int i = 0; i < check.length; i++) {
+			if (check[i] == t) {
+				re += check[i];
+				System.out.println(re);
+				return;
+			} else {
+				re += check[i] + "->";
 			}
+		}
 
 		System.out.println("Không có đường đi từ đỉnh: " + s + " đến đỉnh: " + t);
 	}
@@ -429,7 +435,7 @@ public class Graph {
 		ArrayList<Integer> x = new ArrayList<>();
 		ArrayList<Integer> y = new ArrayList<>();
 		x.add(0);
-		while(true) {
+		while (true) {
 			this.diTimCacDinhLienThong1(x.get(0));
 		}
 	}
