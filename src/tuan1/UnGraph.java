@@ -65,5 +65,6 @@ public class UnGraph extends Graph {
 		}else {
 			return -1;
 		}
+		System.out.println("chinh sua cho nay na");
 	}
 }
