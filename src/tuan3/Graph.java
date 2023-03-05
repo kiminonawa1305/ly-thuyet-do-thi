@@ -3,12 +3,13 @@ package tuan3;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 
 public class Graph {
@@ -92,7 +93,7 @@ public class Graph {
 		System.out.println("Các đỉnh liên thông với đỉnh: " + dinh + " là " + re);
 	}
 
-	public ArrayList diTimCacDinhLienThong1(int dinh) {
+	public ArrayList<Integer> diTimCacDinhLienThong1(int dinh) {
 		ArrayList<Integer> re = new ArrayList<>();
 		visited = new boolean[numVertex];
 		for (int i = 0; i < numVertex; i++) {
@@ -151,6 +152,7 @@ public class Graph {
 		} else {
 			int i = 0;
 			int thanhPhan = 1;
+			System.out.println("Đồ thị trên không liên thông và có số thành phần là: " + count);
 			while (i < dinhThuocCungThanhPhan.size()) {
 				System.out.print("Cac dinh thuoc thanh phan lien thong thu: " + thanhPhan + " la: ");
 				for (; i < dinhThuocCungThanhPhan.size() && dinhThuocCungThanhPhan.get(i) != -1; i++) {
@@ -301,24 +303,18 @@ public class Graph {
 
 		vertexes.add(startVex);
 		visited[startVex] = true;
-		boolean canPop = true;
 
-		run: while (!vertexes.isEmpty()) {
-			if (canPop) {
-				vertex = vertexes.pop();
-				result[i] = vertex + 1;
-				i++;
-			}
+		while (!vertexes.isEmpty()) {
+			vertex = vertexes.pop();
+			result[i] = vertex + 1;
+			i++;
 
-			canPop = false;
 			for (int index = numVertex - 1; index >= 0; index--) {
 				if (this.matrix[vertex][index] != 0 && !this.visited[index] && !vertexes.contains(index)) {
 					vertexes.add(index);
 					visited[index] = true;
-					continue run;
 				}
 			}
-			canPop = true;
 		}
 
 		return result;
@@ -328,28 +324,22 @@ public class Graph {
 		int i = 0;
 		result = new int[matrix.length];
 		visited = new boolean[matrix.length];
-		Stack<Integer> vertexes = new Stack<>();
+		Stack<Integer> stack = new Stack<>();
 
-		vertexes.add(startVex);
+		stack.add(startVex);
 		visited[startVex] = true;
-		boolean canPop = true;
 
-		run: while (!vertexes.isEmpty()) {
-			if (canPop) {
-				vertex = vertexes.pop();
-				result[i] = vertex + 1;
-				i++;
-			}
+		while (!stack.isEmpty()) {
+			vertex = stack.pop();
+			result[i] = vertex + 1;
+			i++;
 
-			canPop = false;
 			for (int index = numVertex - 1; index >= 0; index--) {
-				if (this.matrix[vertex][index] != 0 && !this.visited[index] && !vertexes.contains(index)) {
-					vertexes.add(index);
+				if (this.matrix[vertex][index] != 0 && !this.visited[index]) {
+					stack.add(index);
 					visited[index] = true;
-					continue run;
 				}
 			}
-			canPop = true;
 		}
 
 		return result;
@@ -431,28 +421,71 @@ public class Graph {
 		System.out.println("Không có đường đi từ đỉnh: " + s + " đến đỉnh: " + t);
 	}
 
+	/**
+	 * Phương thức checkBipartiteGraph dùng để kiểm tra xem 1 đồ thị có liên trong
+	 * hay không.
+	 * 
+	 * @return true nếu đồ thị là đồ thị hai phần, false nếu không phải.
+	 */
 	public boolean checkBipartiteGraph() {
-		ArrayList<Integer> x = new ArrayList<>();
-		ArrayList<Integer> y = new ArrayList<>();
+		Set<Integer> x = new HashSet<>();
+		Set<Integer> y = new HashSet<>();
 		x.add(0);
 		while (true) {
-			this.diTimCacDinhLienThong1(x.get(0));
+			for (int e : x) {
+				y.addAll(diTimCacDinhLienThong1(e));
+			}
+
+			if (isHollow(x, y)) {
+				if (x.size() + y.size() == numVertex) {
+					return true;
+				} else {
+					x.removeAll(x);
+					x.addAll(y);
+					y.removeAll(y);
+				}
+			} else {
+				return false;
+			}
 		}
 	}
 
+	/**
+	 * Kiểm tra xem 2 Set này có thành phần nào của Set y chứa trứa trong Set x hay
+	 * không.
+	 * 
+	 * Dùng phương thức retainAll để kiểm tra phần giao của 2 Set.
+	 * Nó hoạt động bằng các kiểm tra xem có phần tử nào của y trong x không
+	 * Các phần tử chung đó sẽ lưu vào x. 
+	 * Ta tạo 1 Set khác và add các phần tử của x vào và thực hiện kiểm tra để không ảnh hưởng đến mảng x.
+	 * Chỉ cần 1 phần từ của y có trong x thì phương thức sẽ trả về true và ngược lại.
+	 * 
+	 * @param <E>
+	 * @param x
+	 * @param y
+	 * @return false nếu có 1 thành phần của y có trong
+	 * @return true nếu không có thành phần nào của y có trong x.
+	 */
+	public <E> boolean isHollow(Set<E> x, Set<E> y) {
+		Set<E> intersection = new HashSet<>(x);
+		return intersection.retainAll(y);
+	}
+
 	public static void main(String[] args) throws IOException {
-		Graph test = new Graph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\Bo du lieu test\\graph");
+		Graph test = new Graph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\src\\tuan3\\graph");
 		int[] DFS = test.DFSGraph(4);
 		System.out.println(Arrays.toString(DFS));
 
-		test = new Graph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\Bo du lieu test\\graph");
+		test = new Graph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\src\\tuan3\\graph");
 		DFS = test.DFSGraphDeQuy(4);
 		System.out.println(Arrays.toString(DFS));
 		test.findPathTwoVexsByDFS(4, 7);
+		test.findPathTwoVexsByBFS(4, 7);
 
 		Graph graph = new Graph(
-				"D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\Bo du lieu test\\doThiKhongLienThong");
+				"D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\src\\tuan3\\doThiKhongLienThong");
 		graph.xetTinhLienThong();
-
+		test = new Graph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\ltdt\\src\\tuan3\\doThiLuongPhan.txt");
+		System.out.println("Xét tính liên thông của đồ thị: " + test.checkBipartiteGraph());
 	}
 }
