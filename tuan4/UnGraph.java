@@ -42,9 +42,9 @@ public class UnGraph extends Graph {
 
 	@Override
 	public void removeEdge(int v1, int v2) {
-		if (v1 >= 0 && v2 >= v2 && v1 < matrix.length && v2 < matrix.length) {
-			matrix[v1][v2]--;
-			matrix[v2][v1]--;
+		if (v1 > 0 && v2 > 0 && v1 <= matrix.length && v2 <= matrix.length) {
+			matrix[v1 - 1][v2 - 1]--;
+			matrix[v2 - 1][v1 - 1]--;
 		} else {
 			System.out.println("Vị trí nhập vào không hợp lệ!");
 		}
@@ -94,7 +94,7 @@ public class UnGraph extends Graph {
 				}
 			}
 
-			return count == 2;
+			return count == 2 || count == 0;
 		}
 
 		return false;
@@ -141,10 +141,5 @@ public class UnGraph extends Graph {
 
 		re.add(v);
 		return re;
-	}
-
-	@Override
-	public void findPathEuler() {
-
 	}
 }

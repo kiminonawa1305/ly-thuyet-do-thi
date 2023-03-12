@@ -11,6 +11,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
 public abstract class Graph {
 	protected int numVertex;
 	protected int[][] matrix;
@@ -445,6 +447,7 @@ public abstract class Graph {
 
 	/**
 	 * Kiểm tra tính liên thông của đồ thị
+	 * 
 	 * @return
 	 */
 	public boolean isConnected() {
@@ -461,6 +464,7 @@ public abstract class Graph {
 
 	/**
 	 * Tìm đường đi từ đỉnh s đến đỉnh t bằng thuật toán DFS
+	 * 
 	 * @param s
 	 * @param t
 	 */
@@ -490,6 +494,7 @@ public abstract class Graph {
 
 	/**
 	 * Tìm đường đi từ đỉnh s đến đỉnh t bằng thuật toán BFS
+	 * 
 	 * @param s
 	 * @param t
 	 */
@@ -571,14 +576,11 @@ public abstract class Graph {
 		return intersection.retainAll(y);
 	}
 
-	
-	
 	@Override
 	public String toString() {
 		printMatrix();
 		return "";
 	}
-	
 
 	/**
 	 * Viết phương thức kiểm tra đồ thị G có chu trình Euler hay không?
@@ -594,62 +596,60 @@ public abstract class Graph {
 	 */
 	public abstract boolean checkPathEuler();
 
-	
 	/**
 	 * Phương thức sẽ xóa 1 chu trình nhỏ bắt đầu từ đỉnh v ra khỏi matrix
+	 * 
 	 * @param v
 	 * @param matrix
 	 * @return
 	 */
 	public abstract ArrayList<Integer> removeSubCycle(int v, int[][] matrix);
-	
-	
+
 	/**
 	 * Nối cái chu trình con của chu trình Euler lại
+	 * 
 	 * @param eulerCycles
 	 */
 	public void joinEulerCycles(ArrayList<ArrayList<Integer>> eulerCycles) {
 		LinkedList<Integer> link = new LinkedList<>();
 		link.addAll(eulerCycles.get(0));
 		eulerCycles.remove(0);
-		
-		while(!eulerCycles.isEmpty()) {
-			for(int i = 0; i < eulerCycles.size(); i++) {
+
+		while (!eulerCycles.isEmpty()) {
+			for (int i = 0; i < eulerCycles.size(); i++) {
 				int obj = eulerCycles.get(i).get(0);
-				if(link.contains(obj)) {
+				if (link.contains(obj)) {
 					int index = link.indexOf(obj);
 					link.remove(index);
-					for(int j = 0; j < eulerCycles.get(i).size(); j++) {
+					for (int j = 0; j < eulerCycles.get(i).size(); j++) {
 						link.add(index + j, eulerCycles.get(i).get(j));
 					}
 					eulerCycles.remove(i);
 				}
 			}
 		}
-		
-		for(int i = 0; i < link.size() - 1; i++) {
+
+		for (int i = 0; i < link.size() - 1; i++) {
 			System.out.print(link.get(i) + "->");
 		}
 		System.out.println(link.getLast());
 	}
 
-
-	
 	/**
 	 * Viết phương thức tìm chu trình Euler của đồ thị G?
 	 */
 	public void findCycleEuler(int v) {
 		int[][] coppy = this.cloneMatrix();
 		ArrayList<ArrayList<Integer>> re = new ArrayList<>();
-		
-		if(this.checkCycleEuler()) {
-			a : while(true) {
+
+		if (this.checkCycleEuler()) {
+			a: while (true) {
 				ArrayList<Integer> subCycle = removeSubCycle(v, coppy);
 				re.add(subCycle);
-				
-				for(int i = 0; i < numVertex; i++) {
-					for(int j = 0; j < this.matrix[i].length; j++) {
-						if(coppy[i][j] != 0) {
+
+				for (int i = 0; i < numVertex; i++) {
+					for (int j = 0; j < this.matrix[i].length; j++) {
+						if (coppy[i][j] != 0) {
 							v = i + 1;
 							continue a;
 						}
@@ -658,23 +658,94 @@ public abstract class Graph {
 				break;
 			}
 		}
-		
+
 		joinEulerCycles(re);
+	}
+
+	public void findCycleEulerStack(int v) {
+		ArrayList<Integer> cycle = new ArrayList<>();
+		Stack<Integer> stack = new Stack<>();
+		stack.add(v);
+		int[][] coppy = this.cloneMatrix();
+
+		if (this.checkCycleEuler()) {
+			a: while (!stack.isEmpty()) {
+				v = stack.peek();
+				b: for (int i = 0; i < matrix.length; i++) {
+					if (matrix[v - 1][i] != 0) {
+						stack.add(i + 1);
+						this.removeEdge(v, i + 1);
+						continue a;
+					}
+				}
+
+				cycle.add(v);
+				stack.pop();
+			}
+
+			for(int i = cycle.size() - 1; i > 0; i--) {
+				System.out.print(cycle.get(i) + "->");
+			}
+			System.out.println(cycle.get(0));
+			this.matrix = coppy;
+			return;
+		}
+
+		System.out.println("Đồ thị không có chu trình Euler");
 	}
 
 	/**
 	 * Viết phương thức tìm đường đi Euler của đồ thị G?
 	 */
-	public abstract void findPathEuler();
-	
-	public int[][] cloneMatrix(){
-		int resul[][] = new int[matrix.length][matrix[0].length];
-		for(int i = 0; i < matrix.length; i++) {
-			for(int j = 0; j < matrix[i].length; j++) {
-				resul[i][j] = matrix[i][j];
+	public void findPathEuler() {
+		int v = 1;
+		int min = numVertex;
+		for(int i = 0; i < numVertex; i++) {
+			if(deg(i + 1)%2 == 1 && deg(i + 1) < min) {
+				min = deg(i + 1);
+				v = i + 1;
 			}
 		}
 		
+		ArrayList<Integer> path = new ArrayList<>();
+		Stack<Integer> stack = new Stack<>();
+		stack.add(v);
+		int[][] coppy = this.cloneMatrix();
+
+		if (this.checkPathEuler()) {
+			a: while (!stack.isEmpty()) {
+				v = stack.peek();
+				for (int i = 0; i < matrix.length; i++) {
+					if (matrix[v - 1][i] != 0) {
+						stack.add(i + 1);
+						this.removeEdge(v, i + 1);
+						continue a;
+					}
+				}
+				
+				path.add(v);
+				stack.pop();
+			}
+
+			for(int i = path.size() - 1; i > 0; i--) {
+				System.out.print(path.get(i) + "->");
+			}
+			System.out.println(path.get(0));
+			this.matrix = coppy;
+			return;
+		}
+
+		System.out.println("Đồ thị không có đường đi Euler");
+	}
+
+	public int[][] cloneMatrix() {
+		int resul[][] = new int[matrix.length][matrix[0].length];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				resul[i][j] = matrix[i][j];
+			}
+		}
+
 		return resul;
 	}
 }

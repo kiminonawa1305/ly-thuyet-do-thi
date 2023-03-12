@@ -120,7 +120,7 @@ public class DnGraph extends Graph {
 					return false;
 				}
 			}
-			return countPlus == 1 && countSub == countPlus;
+			return (countPlus == 1 && countSub == countPlus) || (countPlus == 0 && countSub == 0);
 		}
 		return false;
 	}
@@ -163,11 +163,5 @@ public class DnGraph extends Graph {
 		
 		re.add(v);
 		return re;
-	}
-
-	@Override
-	public void findPathEuler() {
-		// TODO Auto-generated method stub
-		
 	}
 }
