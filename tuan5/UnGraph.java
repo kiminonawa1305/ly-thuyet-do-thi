@@ -1,6 +1,7 @@
 package tuan5;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -154,7 +155,7 @@ public class UnGraph extends Graph {
 
 		return true;
 	}
-	
+
 	@Override
 	public boolean checkPathHamilton() {
 		if (this.checkCycleHamilton()) {
@@ -175,5 +176,4 @@ public class UnGraph extends Graph {
 
 		return counleDeg1 <= 2;
 	}
-
 }

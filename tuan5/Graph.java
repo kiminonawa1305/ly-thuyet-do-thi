@@ -729,7 +729,6 @@ public abstract class Graph {
 
 	}
 
-
 	public void expend(int v) {
 		for (int i = 0; i < numVertex; i++) {
 			if (!visited[i] && matrix[result[v - 1]][i] != 0) {
@@ -764,7 +763,15 @@ public abstract class Graph {
 		}
 		System.out.print((path[0] + 1) + "\n");
 	}
-	
+
+	public void printPath(int[] path) {
+		System.out.println("Duong di");
+		for (int i = 0; i < path.length - 1; i++) {
+			System.out.print((path[i] + 1) + "->");
+		}
+		System.out.print((path[path.length - 1] + 1) + "\n");
+	}
+
 	public int[][] cloneMatrix() {
 		int resul[][] = new int[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
@@ -797,6 +804,36 @@ public abstract class Graph {
 		return true;
 	}
 
+	public void backtracking(int index) {
+		for (int i = 0; i < numVertex; i++) {
+			if (!visited[i] && matrix[result[index - 1]][i] != 0) {
+				result[index] = i;
+				visited[i] = true;
+				backtracking(index + 1);
+				visited[i] = false;
+				if(result[numVertex - 1] != 0) {
+					printPath(result);
+					result[numVertex - 1] = 0;
+				}
+			}
+		}
+	}
+
+	public void findPathHamilton() {
+		if (!checkPathHamilton()) {
+			System.out.println("khong co duong di H");
+			return;
+		}
+
+		for (int i = 0; i < numVertex; i++) {
+			visited = new boolean[this.numVertex];
+			result = new int[this.numVertex];
+			visited[i] = true;
+			result[0] = i;
+			backtracking(1);
+		}
+	}
+
 	public static void main(String[] args) throws IOException {
 		Graph graph1 = new UnGraph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\BaiTapTrenLop\\src\\tuan5\\do_thi");
 		Graph graph2 = new UnGraph(
@@ -811,7 +848,7 @@ public abstract class Graph {
 		Graph graph9 = new DnGraph(
 				"D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\BaiTapTrenLop\\src\\tuan5\\do_thi_k6_co_huong");
 
-		Graph graph10 = new DnGraph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\BaiTapTrenLop\\src\\tuan5\\do_thi");
+		Graph graph10 = new DnGraph("D:\\Tai_lieu_hoc_tap\\LiThuyetDoThi\\Code\\BaiTapTrenLop\\src\\tuan5\\do_thi_5");
 
 		graph5.findHamiltonCycles();
 		System.out.println("==================================");
@@ -819,6 +856,6 @@ public abstract class Graph {
 		System.out.println("==================================");
 		graph9.findHamiltonCycles();
 		System.out.println("==================================");
-		graph10.expend(1);
+		graph10.findPathHamilton();
 	}
 }
